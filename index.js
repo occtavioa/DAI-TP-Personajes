@@ -1,5 +1,4 @@
 import express from "express"
-import dbconfig from "./dbconfig.js"
 import DB from './db_class.js'
 const app = express()
 const port = 3000
