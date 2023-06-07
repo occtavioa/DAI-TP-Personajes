@@ -9,19 +9,18 @@ app.get('/', async (req, res) => {
 })
 app.get('/personajes', async (req, res) => {
     try {
-        let r;
-        if(req.query.nombre != null) {
-            r = await DB.get_by_nombre(req.query.nombre);
-        }
-        else if(req.query.edad != null) {
-            r = await DB.get_by_edad(req.query.edad);
-        }
-        else if(req.query.movId != null) {
-            r = await DB.get_by_pelicula(req.query.movId);
+        let keys = Object.keys(req.query);
+        if(keys.length > 1) {
+            res.send('muchos params');
+            res.end();
         } else {
-            r = await DB.get_all_personajes();
+            console.log(keys);
+            console.log(req.query);
+            let prop = {field: keys[0], value: req.query[keys[0]]}
+            console.log(prop);
+            let r = await DB.get_all_personajes(prop);
+            res.json(r);
         }
-        res.json(r);
     } catch (e) {
         console.log(e);
         res.send("error al obtener personajes");

@@ -4,8 +4,21 @@ import dbconfig from "./dbconfig.js";
 let p = await sql.connect(dbconfig)
 
 class DB {
-    static get_all_personajes = async () => {
-        let r = await p.query("SELECT * FROM Personajes");
+    static get_all_personajes = async (prop) => {
+        let where = "";
+        let join = "";
+        console.log(prop);
+        if(prop.field != undefined) {
+            if(prop.field=='movie') {
+                join = " inner join PersonajePorPelicula on Personajes.Id=PersonajePorPelicula.IdPersonaje"
+                where = ` where PersonajePorPelicula.IdPelicula='${prop.value}'`
+            } else {
+                where = ` WHERE ${prop.field}='${prop.value}'`
+            }
+        }
+        let query = "SELECT * FROM Personajes"+join+where;
+        console.log(query);
+        let r = await p.query(query);
         return r.recordset;
     }
     static get_by_id_personajes = async(id) => {
@@ -13,22 +26,22 @@ class DB {
                                  .query('SELECT * FROM Personajes WHERE Id=@pId');
         return r.recordset;
     }
-    static get_by_nombre = async (nombre) => {
-        let r = await p.request().input('pNombre', nombre)
-                                 .query('SELECT * FROM Personajes WHERE Nombre LIKE @pNombre');
-        return r.recordset;
-    }
-    static get_by_edad = async (edad) => {
-        edad=parseInt(edad);
-        let r = await p.request().input('pEdad', edad)
-                                 .query('SELECT * FROM Personajes WHERE Edad=@pEdad');
-        return r.recordset;
-    }
-    static get_by_pelicula = async ({id}) => {
-        let r = await p.request().input('pId', id)
-                                 .query('SELECT Personajes.Id,Imagen,Nombre,Edad,Peso,Historia FROM Personajes INNER JOIN PersonajePorPelicula ON IdPelicula=@pId WHERE IdPersonaje=Personajes.Id');
-        return r.recordset;
-    }
+    // static get_by_nombre = async (nombre) => {
+    //     let r = await p.request().input('pNombre', nombre)
+    //                              .query('SELECT * FROM Personajes WHERE Nombre LIKE @pNombre');
+    //     return r.recordset;
+    // }
+    // static get_by_edad = async (edad) => {
+    //     edad=parseInt(edad);
+    //     let r = await p.request().input('pEdad', edad)
+    //                              .query('SELECT * FROM Personajes WHERE Edad=@pEdad');
+    //     return r.recordset;
+    // }
+    // static get_by_pelicula = async ({id}) => {
+    //     let r = await p.request().input('pId', id)
+    //                              .query('SELECT Personajes.Id,Imagen,Nombre,Edad,Peso,Historia FROM Personajes INNER JOIN PersonajePorPelicula ON IdPelicula=@pId WHERE IdPersonaje=Personajes.Id');
+    //     return r.recordset;
+    // }
     static editar_personaje = async({id, imagen, nombre, edad, peso, historia}) => {
         let r = await p.request().input('pId', id)
                                  .input('pImagen', imagen)
