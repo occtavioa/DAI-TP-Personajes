@@ -48,7 +48,7 @@ app.post('/personajes', async (req, res) => {
 })
 app.put('/personajes/:id', async (req, res) => {
     try {
-        let r = await DB.editar_personaje({id: req.params.id, ...req.body});
+        let r = await DB.editar_personaje(req.params.id, req.body);
         console.log(r);
         console.log(req.body);
         res.json(r);
