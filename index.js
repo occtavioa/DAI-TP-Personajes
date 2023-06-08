@@ -14,10 +14,7 @@ app.get('/personajes', async (req, res) => {
             res.send('muchos params');
             res.end();
         } else {
-            console.log(keys);
-            console.log(req.query);
             let prop = {field: keys[0], value: req.query[keys[0]]}
-            console.log(prop);
             let r = await DB.get_all_personajes(prop);
             res.json(r);
         }
@@ -63,12 +60,33 @@ app.delete('/personajes/:id', async (req, res) => {
         res.send("error al eliminar personaje");
     }
 })
+app.get('/personajes/detalle/:id', async (req, res) => {
+    try {
+        console.log(req.params.id);
+        let r = await DB.detalle_personajes(req.params.id);
+        res.json(r);
+    } catch (e) {
+        console.log(e);
+        res.send("error al obtener pelicula");
+    }
+})
 
 
 app.get('/peliculas', async (req, res) => {
     try {
-        let r = await DB.get_all_peliculas(req.query);
-        res.json(r);
+        let keys = Object.keys(req.query);
+        if(keys.length > 1) {
+            res.send('muchos params');
+        } else {
+            let prop = {field: keys[0], value: req.query[keys[0]]}
+            let r = await DB.get_all_peliculas(prop);
+            res.json(r.map(m => ({
+                Id: m.Id,
+                Image: m.Imagen,
+                Titulo: m.Titulo,
+                FechaCreacion: m.FechaCreacion
+            })));
+        }
     } catch (e) {
         console.log(e);
         res.send("error al obtener peliculas");
@@ -108,6 +126,15 @@ app.delete('/peliculas/:id', async (req, res) => {
     } catch (e) {
         console.log(e);
         res.send("error al eliminar pelicula");
+    }
+})
+app.get('/peliculas/detalle/:id', async (req, res) => {
+    try {
+        let r = await DB.detalle_peliculas(req.params.id);
+        res.json(r);
+    } catch (e) {
+        console.log(e);
+        res.send("error al obtener pelicula");
     }
 })
 
