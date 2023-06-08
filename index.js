@@ -26,6 +26,8 @@ app.get('/personajes', async (req, res) => {
 app.get('/personajes/:id', async (req, res) => {
     try {
         let r = await DB.get_by_id_personajes(req.params.id);
+        console.log(r);
+        console.log(req.params.id);
         res.json(r);
     } catch (e) {
         console.log(e);
@@ -36,6 +38,8 @@ app.use(bodyParser.json());
 app.post('/personajes', async (req, res) => {
     try {
         let r = await DB.agregar_personaje(req.body);
+        console.log(r);
+        console.log(req.body);
         res.json(r);
     } catch (e) {
         console.log(e);
@@ -44,7 +48,9 @@ app.post('/personajes', async (req, res) => {
 })
 app.put('/personajes/:id', async (req, res) => {
     try {
-        let r = await DB.editar_personaje(req.body);
+        let r = await DB.editar_personaje({id: req.params.id, ...req.body});
+        console.log(r);
+        console.log(req.body);
         res.json(r);
     } catch (e) {
         console.log(e);
@@ -54,6 +60,8 @@ app.put('/personajes/:id', async (req, res) => {
 app.delete('/personajes/:id', async (req, res) => {
     try {
         let r = await DB.delete_by_id_personajes(req.params.id);
+        console.log(r);
+        console.log(req.params.id);
         res.json(r);
     } catch (e) {
         console.log(e);

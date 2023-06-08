@@ -4,15 +4,14 @@ import dbconfig from "./dbconfig.js";
 let p = await sql.connect(dbconfig)
 
 class DB {
-    static get_all_personajes = async (prop) => {
+    static get_all_personajes = async ({field, value}) => {
         let plus = "";
-        console.log(prop);
-        if(prop.field != undefined) {
-            if(prop.field=='movie') {
+        if(field != undefined && value != undefined) {
+            if(field=='movie') {
                 plus = `inner join PersonajePorPelicula on Personajes.Id=PersonajePorPelicula.IdPersonaje
-                    where PersonajePorPelicula.IdPelicula='${prop.value}'`
+                    where PersonajePorPelicula.IdPelicula='${value}'`
             } else {
-                plus = ` WHERE ${prop.field}='${prop.value}'`
+                plus = ` WHERE ${field}='${value}'`
             }
         }
         let query = "SELECT * FROM Personajes"+plus;
@@ -43,7 +42,7 @@ class DB {
             .query('INSERT INTO Personajes VALUES (@pImagen,@pNombre,@pEdad,@pPeso,@pHistoria)');
         return r.recordset;
     }
-    static delete_by_id_personajes = async({id}) => {
+    static delete_by_id_personajes = async(id) => {
         let r = await p.request().input('pId', id)
             .query('DELETE FROM Personajes WHERE Id=@pId');
         return r.recordset;
@@ -59,20 +58,19 @@ class DB {
         return {personaje, peliculas};
     }
 
-    static get_all_peliculas = async (props) => {
+    static get_all_peliculas = async ({field, value}) => {
         let plus = "";
-        if(props.field != undefined) {
+        if(field != undefined && value != undefined) {
             if(props.field=='ord') {
-                plus = ` ORDER BY FechaCreacion ${props.value}`
+                plus = ` ORDER BY FechaCreacion ${value}`
             } else {
-                plus = ` WHERE ${props.field}='${props.value}'`
+                plus = ` WHERE ${field}='${value}'`
             }
         }
-        let query = "SELECT * FROM PELICULAS"+plus;
-        let r = await p.query(q);
+        let r = await p.query("SELECT * FROM PELICULAS"+plus);
         return r.recordset;
     }
-    static detalle_peliculas = async({id}) => {
+    static detalle_peliculas = async(id) => {
         let pelicula = this.get_by_id_peliculas(id);
         let personajes = await p.query(`select Peliculas.* from Personajes 
             inner join PersonajePorPelicula on PersonajePorPelicula.IdPersonaje=personajes.Id
