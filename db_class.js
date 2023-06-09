@@ -43,8 +43,10 @@ class DB {
         return result.recordset;
     }
     static delete_by_id_personajes = async(id) => {
-        let result = await p.request().input('pId', id)
-            .query('DELETE FROM PersonajePorPelicula INNER JOIN Perosnajes on PersonajePorPelicula.IdPersonaje=Personajes.Id WHERE Personajes.Id=@pId');
+        let peliculas = await p.request().input('pId', id)
+            .query('DELETE FROM PersonajePorPelicula WHERE PersonajePorPelicula.IdPersonaje=@pId');
+        let personaje = await p.request().input('pId', id)
+            .query('DELETE FROM Personajes WHERE Personajes.Id=@pId');
         return result.recordset;
     }
     static detalle_personajes = async(id) => {
@@ -96,9 +98,11 @@ class DB {
         return result.recordset;
     }
     static delete_by_id_peliculas = async(id) => {
-        let result = await p.request().input('pId', id)
-        .query('DELETE FROM PersonajePorPelicula INNER JOIN Peliculas on PersonajePorPelicula.IdPelicula=Peliculas.Id WHERE Peliculas.Id=@pId');
-        return result.recordset;
+        let personajes = await p.request().input('pId', id)
+            .query('DELETE FROM PersonajePorPelicula WHERE PersonajePorPelicula.IdPelicula=@pId');
+        let pelicula = await p.request().input('pId', id)
+            .query('DELETE FROM Peliculas WHERE Peliculas.Id=@pId');
+        return peliculas.recordset;
     }
     static detalle_peliculas = async(id) => {
         let pelicula = await this.get_by_id_peliculas(id);
