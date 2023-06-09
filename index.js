@@ -1,26 +1,28 @@
 import express from "express"
 import DB from './db_class.js'
 import bodyParser from "body-parser"
+
 const app = express()
 const port = 3000
 
-app.get('/', async (req, res) => {
-    res.send('TP-Personajes');
+app.get('/', (req, res, next) => {
+    res.send('TP-Personajes')
 })
 app.get('/personajes', async (req, res) => {
-    try {
-        let keys = Object.keys(req.query);
-        if(keys.length > 1) {
-            res.send('muchos params');
-            res.end();
-        } else {
-            let prop = {field: keys[0], value: req.query[keys[0]]}
-            let r = await DB.get_all_personajes(prop);
+    let keys = Object.keys(req.query);
+    if (keys.length > 1) {
+        res.status(400).send('muchos params');
+    } else if (keys[0] !== undefined && keys[0].toLowerCase() !== 'nombre' && keys[0].toLowerCase() !== 'edad' && keys[0].toLowerCase() !== 'peliculas') {
+        res.status(400).send('parametros invalidos')
+    } else {
+        try {
+            let r = await DB.get_all_personajes({ field: keys[0], value: req.query[keys[0]] });
+            console.log(r);
             res.json(r);
+        } catch (e) {
+            console.log(e);
+            res.status(500).send("error al obtener personajes");
         }
-    } catch (e) {
-        console.log(e);
-        res.send("error al obtener personajes");
     }
 })
 app.get('/personajes/:id', async (req, res) => {
@@ -31,7 +33,7 @@ app.get('/personajes/:id', async (req, res) => {
         res.json(r);
     } catch (e) {
         console.log(e);
-        res.send("error al obtener personaje");
+        res.status(500).send("error al obtener personaje");
     }
 })
 app.use(bodyParser.json());
@@ -43,7 +45,7 @@ app.post('/personajes', async (req, res) => {
         res.json(r);
     } catch (e) {
         console.log(e);
-        res.send("error al crear personaje");
+        res.status(500).send("error al crear personaje");
     }
 })
 app.put('/personajes/:id', async (req, res) => {
@@ -54,7 +56,7 @@ app.put('/personajes/:id', async (req, res) => {
         res.json(r);
     } catch (e) {
         console.log(e);
-        res.send("error al modificar personaje");
+        res.status(500).send("error al modificar personaje");
     }
 })
 app.delete('/personajes/:id', async (req, res) => {
@@ -65,40 +67,42 @@ app.delete('/personajes/:id', async (req, res) => {
         res.json(r);
     } catch (e) {
         console.log(e);
-        res.send("error al eliminar personaje");
+        res.status(500).send("error al eliminar personaje");
     }
 })
 app.get('/personajes/detalle/:id', async (req, res) => {
     try {
-        console.log(req.params.id);
         let r = await DB.detalle_personajes(req.params.id);
+        console.log(r);
+        console.log(req.params.id);
         res.json(r);
     } catch (e) {
         console.log(e);
-        res.send("error al obtener pelicula");
+        res.status(500).send("error al obtener pelicula");
     }
 })
 
 //
 
 app.get('/peliculas', async (req, res) => {
-    try {
-        let keys = Object.keys(req.query);
-        if(keys.length > 1) {
-            res.send('muchos params');
-        } else {
-            let prop = {field: keys[0], value: req.query[keys[0]]}
-            let r = await DB.get_all_peliculas(prop);
+    let keys = Object.keys(req.query);
+    if(keys.length > 1) {
+        res.status(400).send('error muchos params');
+    } else if(keys[0] !== undefined && keys[0] !== 'titulo' && keys[0] !== 'ord') {
+        res.status(400).send('parametros invalidos');
+    } else {
+        try {
+            let r = await DB.get_all_peliculas({ field: keys[0], value: req.query[keys[0]] });
             res.json(r.map(m => ({
                 Id: m.Id,
                 Image: m.Imagen,
                 Titulo: m.Titulo,
                 FechaCreacion: m.FechaCreacion
             })));
+        } catch (e) {
+            console.log(e);
+            res.status(500).send("error al obtener peliculas");
         }
-    } catch (e) {
-        console.log(e);
-        res.send("error al obtener peliculas");
     }
 })
 app.get('/peliculas/:id', async (req, res) => {
@@ -107,7 +111,7 @@ app.get('/peliculas/:id', async (req, res) => {
         res.json(r);
     } catch (e) {
         console.log(e);
-        res.send("error al obtener pelicula");
+        res.status(500).send("error al obtener pelicula");
     }
 })
 app.post('/peliculas', async (req, res) => {
@@ -116,7 +120,7 @@ app.post('/peliculas', async (req, res) => {
         res.json(r);
     } catch (e) {
         console.log(e);
-        res.send("error al crear pelicula");
+        res.status(500).send("error al crear pelicula");
     }
 })
 app.put('/peliculas/:id', async (req, res) => {
@@ -125,7 +129,7 @@ app.put('/peliculas/:id', async (req, res) => {
         res.json(r);
     } catch (e) {
         console.log(e);
-        res.send("error al modificar pelicula");
+        res.status(500).send("error al modificar pelicula");
     }
 })
 app.delete('/peliculas/:id', async (req, res) => {
@@ -134,7 +138,7 @@ app.delete('/peliculas/:id', async (req, res) => {
         res.json(r);
     } catch (e) {
         console.log(e);
-        res.send("error al eliminar pelicula");
+        res.status(500).send("error al eliminar pelicula");
     }
 })
 app.get('/peliculas/detalle/:id', async (req, res) => {
@@ -143,7 +147,7 @@ app.get('/peliculas/detalle/:id', async (req, res) => {
         res.json(r);
     } catch (e) {
         console.log(e);
-        res.send("error al obtener pelicula");
+        res.status(500).send("error al obtener pelicula");
     }
 })
 

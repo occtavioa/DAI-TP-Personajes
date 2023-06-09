@@ -7,7 +7,7 @@ class DB {
     static get_all_personajes = async ({field, value}) => {
         let query = "SELECT * FROM Personajes";
         if(field != undefined && value != undefined) {
-            if(field=='movie') {
+            if(field === 'peliculas') {
                 query += `inner join PersonajePorPelicula on Personajes.Id=PersonajePorPelicula.IdPersonaje
                     where PersonajePorPelicula.IdPelicula='${value}'`
             } else {
@@ -62,7 +62,7 @@ class DB {
     static get_all_peliculas = async ({field, value}) => {
         let query = "SELECT * FROM Peliculas";
         if(field != undefined && value != undefined) {
-            if(field=='ord') {
+            if(field === 'ord') {
                 query += ` ORDER BY FechaCreacion ${value}`
             } else {
                 query += ` WHERE ${field}='${value}'`
