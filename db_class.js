@@ -44,16 +44,15 @@ class DB {
     }
     static delete_by_id_personajes = async(id) => {
         let result = await p.request().input('pId', id)
-            .query('DELETE FROM Personajes WHERE Id=@pId');
+            .query('DELETE FROM PersonajePorPelicula INNER JOIN Perosnajes on PersonajePorPelicula.IdPersonaje=Personajes.Id WHERE Personajes.Id=@pId');
         return result.recordset;
     }
     static detalle_personajes = async(id) => {
         console.log(id);
         let personaje = await this.get_by_id_personajes(id);
-        let peliculas = await p.query(`select Peliculas.* from Personajes 
-            inner join PersonajePorPelicula on PersonajePorPelicula.IdPersonaje=personajes.Id
-            inner join Peliculas on PersonajePorPelicula.IdPelicula=Peliculas.Id
-            where Personajes.Id=${id}`);
+        let peliculas = await p.query(`select Peliculas.* from Peliculas 
+            inner join PersonajePorPelicula on PersonajePorPelicula.IdPelicula=Peliculas.Id
+            where PersonajePorPelicula.IdPersonaje=${id}`);
         peliculas = peliculas.recordset
         return {personaje, peliculas};
     }
@@ -63,7 +62,7 @@ class DB {
     static get_all_peliculas = async ({field, value}) => {
         let query = "SELECT * FROM Peliculas";
         if(field != undefined && value != undefined) {
-            if(props.field=='ord') {
+            if(field=='ord') {
                 query += ` ORDER BY FechaCreacion ${value}`
             } else {
                 query += ` WHERE ${field}='${value}'`
@@ -98,15 +97,14 @@ class DB {
     }
     static delete_by_id_peliculas = async(id) => {
         let result = await p.request().input('pId', id)
-        .query('DELETE FROM Peliculas WHERE Id=@pId');
+        .query('DELETE FROM PersonajePorPelicula INNER JOIN Peliculas on PersonajePorPelicula.IdPelicula=Peliculas.Id WHERE Peliculas.Id=@pId');
         return result.recordset;
     }
     static detalle_peliculas = async(id) => {
-        let pelicula = this.get_by_id_peliculas(id);
-        let personajes = await p.query(`select Peliculas.* from Personajes 
+        let pelicula = await this.get_by_id_peliculas(id);
+        let personajes = await p.query(`select Personajes.* from Personajes 
             inner join PersonajePorPelicula on PersonajePorPelicula.IdPersonaje=personajes.Id
-            inner join Peliculas on PersonajePorPelicula.IdPelicula=Peliculas.Id
-            where Peliculas.Id=${id}`);
+            where PersonajePorPelicula.IdPelicula=${id}`);
         personajes = personajes.recordset;
         return {pelicula, personajes}
     }

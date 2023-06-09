@@ -79,6 +79,7 @@ app.get('/personajes/detalle/:id', async (req, res) => {
     }
 })
 
+//
 
 app.get('/peliculas', async (req, res) => {
     try {
@@ -120,7 +121,7 @@ app.post('/peliculas', async (req, res) => {
 })
 app.put('/peliculas/:id', async (req, res) => {
     try {
-        let r = await DB.editar_pelicula(req.body);
+        let r = await DB.editar_pelicula(req.params.id, req.body);
         res.json(r);
     } catch (e) {
         console.log(e);
