@@ -1,0 +1,14 @@
+USE [master]
+GO
+CREATE LOGIN [personajes] WITH PASSWORD=N'personajes', DEFAULT_DATABASE=[DAI-Personajes], CHECK_EXPIRATION=OFF,
+CHECK_POLICY=OFF
+GO
+
+USE [DAI-Personajes]
+GO
+CREATE USER [personajes] FOR LOGIN [personajes]
+GO
+USE [DAI-Personajes]
+GO
+ALTER ROLE [db_owner] ADD MEMBER [personajes]
+GO
